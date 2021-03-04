@@ -23,8 +23,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - run: |
-        npm prepare
-        npm build
+        npm run prepare
+        npm run build
         (cd .. ; ./node_modules/tap/bin/run.js)
       env:
         # use postgres for the host here because we have specified a container for the job.
