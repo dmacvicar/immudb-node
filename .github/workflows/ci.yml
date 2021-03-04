@@ -1,0 +1,33 @@
+name: immudb node SDK tests
+
+on:
+  push:
+    branches:
+    - '**'
+  pull_request:
+    branches:
+    - '**'
+
+jobs:
+  container-job:
+    runs-on: ubuntu-latest
+    container:
+      image:  node:10.16-jessie
+    services:
+      immudb:
+        image: codenotary/immudb:latest
+        ports:
+        - 3322:3322
+    steps:
+    - uses: actions/checkout@v1
+    - run: npm ci
+    - run: |
+        npm prepare
+        npm build
+        (cd .. ; ./node_modules/tap/bin/run.js)
+      working-directory: ./postgres
+      env:
+        # use postgres for the host here because we have specified a container for the job.
+        # If we were running the job on the VM this would be localhost
+        IMMUDB_HOST: immudb
+        IMMUDB_PORT: ${{ job.services.immudb.ports[3322] }}
